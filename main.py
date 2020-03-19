@@ -34,11 +34,12 @@ class DataBase:
         for k, v in save_data.items():
             is_key = True if k in dbase.user.keys() else False
             if is_key:
-                self.db_users.replace_one({"user_id": self.message}, save_data, True)
+                self.db_users.replace_one(
+                    {"user_id": self.message}, save_data, True)
             else:
-                self.db_users.update({"user_id": self.message}, {"$set": save_data})
+                self.db_users.update({"user_id": self.message}, {
+                                     "$set": save_data})
         return self.user
 
     def Delete(self, del_data=""):
         return self.db_users.update({"user_id": self.message}, {"$unset": {del_data: self.user[del_data]}})
-
