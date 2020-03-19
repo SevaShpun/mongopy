@@ -31,7 +31,6 @@ class DataBase:
         return user
 
     def Update(self, save_data={}):
-        user={}
         for k, v in save_data.items():
             is_key = True if k in dbase.user.keys() else False
             if is_key:
@@ -43,38 +42,3 @@ class DataBase:
     def Delete(self, del_data=""):
         return self.db_users.update({"user_id": self.message}, {"$unset": {del_data: self.user[del_data]}})
 
-
-def RunWithNotice(user_id):
-    client = pymongo.MongoClient("localhost", 27017)
-    db = client.ClassicGame
-    db_users = db.db_users
-
-    out = ''
-    if db_users.find_one({'user_id': user_id}):
-        user = db_users.find_one({'user_id': user_id})
-        user_id = user['user_id']
-        out = f'{user_id}, уже создан!'
-    else:
-        base_json = {'user_id': user_id, 'name': "Dev", 'city': "Moscow"}
-        result = db_users.insert_one(base_json)
-        out = f'{user_id}, регистрация прошла успешно!'
-    print(out)
-
-
-user_id = 999
-# База данных
-dbase = DataBase(user_id)
-
-# Регистрирует нового пользователя
-#dbase.Create()
-
-users = dbase.user
-# Изменяет ключ:значение и добавляет, если ключ не существует
-users["ark"] = "gqq2"
-users["age"] = 21
-users["don"] = "q2"
-users["tss"] = "yes"
-dbase.Update(users)
-
-# Удаляет запись по ключу для указанного user_id
-dbase.Delete("ark")
