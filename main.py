@@ -43,3 +43,5 @@ class DataBase:
 
     def Delete(self, del_data=""):
         return self.db_users.update({"user_id": self.message}, {"$unset": {del_data: self.user[del_data]}})
+
+# example
