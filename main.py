@@ -1,52 +1,33 @@
-import pymongo
-import json
+from database import DB
 
-def settings():
-    with open("settings.json", "r", encoding="utf-8") as f:
-        return dict(json.loads(f.read()))
+# Уникальный ID пользователя
+user_id = 999
 
-CFG = settings()
+# База данных
+db = DB(user_id)
 
-cfg_url = CFG.get("url")
-cfg_server = f'{CFG.get("servers")[0]},{CFG.get("servers")[1]},{CFG.get("servers")[2]}'
-cfg_db = CFG.get("db")
-cfg_options = CFG.get("options")
+# Регистрирует нового пользователя
+# db.reg()
 
-class DataBase:
-    message = None
+# Получает список БД
+# db.get_list_database_names()
 
-    def __init__(self, message):
-        self.message = message
-        self.client = pymongo.MongoClient(f'{cfg_url}@{cfg_server}/{cfg_db}?{cfg_options}')
-        self.db = self.client.get_database('gamedb')
-        self.db_users = self.db.db_users
-        self.user = self.db_users.find_one({'user_id': self.message})
+# Получаем данные пользователя
+user = db.get()
+print(user)
+# Изменяет значение
+user["name"] = "Kek"
+user["age"] = 0
+user["res"] = {
+    "gold": 100,
+    "wood": 500,
+    "stone": 800,
+    "iron": 300,
+    "food": 500
+}
+# db.update(user)
 
-    def get_list_database_names(self):
-        print(self.client.list_database_names())
-
-    def reg(self):
-        out = ""
-        if self.db_users.find_one({'user_id': self.message}):
-            user = self.db_users.find_one({'user_id': self.message})
-            user_id = user['user_id']
-            out = f"{user_id}, уже есть!"
-        else:
-            base_json = {'user_id': self.message, 'name': "Dev", 'city': "SPB"}
-            result = self.db_users.insert_one(base_json)
-            out = f"{self.message}, регистрация прошла успешно!"
-        return out
-
-    def get(self, user_id:int=None):
-        if user_id:
-            user = self.db_users.find_one({'user_id': int(user_id)})
-        else:
-            user = self.db_users.find_one({'user_id': self.message})
-        return dict(user)
-
-    def update(self, user:dict=None):
-        return self.db_users.update_one({"user_id": self.message}, {"$set": user})
-
-    def drop_user_key(self, key_name:str):
-        if self.get().get(key_name, None):
-            return self.db_users.update_one({"user_id": self.message}, {"$unset": {key_name: self.get()[key_name]}})
+# Удаляет запись по ключу для указанного user_id
+# db.drop_user_key("res")
+# db.drop_user_key(["age", "name"])
+# db.drop_user_key({"res": ["gold", "stone", "iron"]})
