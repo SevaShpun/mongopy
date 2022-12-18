@@ -2,6 +2,9 @@ import pymongo
 from settings import *
 
 class DB:
+    """
+    Класс для работы с базой данных
+    """
     message = None
 
     def __init__(self, message):
